@@ -583,18 +583,6 @@ resource "azurerm_storage_container" "test" {
 `, r.template(data))
 }
 
-func (r StorageContainerResource) root(data acceptance.TestData) string {
-	return fmt.Sprintf(`
-%s
-
-resource "azurerm_storage_container" "test" {
-  name                  = "$root"
-  storage_account_name  = azurerm_storage_account.test.name
-  container_access_type = "private"
-}
-`, r.template(data))
-}
-
 func (r StorageContainerResource) web(data acceptance.TestData) string {
 	if !features.FivePointOh() {
 		return fmt.Sprintf(`
