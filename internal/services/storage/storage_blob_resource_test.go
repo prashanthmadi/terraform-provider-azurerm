@@ -1286,7 +1286,7 @@ resource "azurerm_storage_blob" "test" {
   size                   = 5120
   content_type           = "image/png"
 }
-`, r.templatePremium(data, "private"))
+`, r.templatePremium(data))
 	}
 	return fmt.Sprintf(`
 	%s
@@ -1302,7 +1302,7 @@ resource "azurerm_storage_blob" "test" {
   size                 = 5120
   content_type         = "image/png"
 }
-`, r.templatePremium(data, "private"))
+`, r.templatePremium(data))
 }
 
 func (r StorageBlobResource) contentTypeUpdated(data acceptance.TestData) string {
@@ -1633,7 +1633,7 @@ resource "azurerm_storage_blob" "test" {
   type                   = "Page"
   size                   = 5120
 }
-`, r.templatePremium(data, "private"))
+`, r.templatePremium(data))
 	}
 	return fmt.Sprintf(`
 	%s
@@ -1648,7 +1648,7 @@ resource "azurerm_storage_blob" "test" {
   type                 = "Page"
   size                 = 5120
 }
-`, r.templatePremium(data, "private"))
+`, r.templatePremium(data))
 }
 
 func (r StorageBlobResource) pageEmptyMetaData(data acceptance.TestData) string {
@@ -2060,7 +2060,7 @@ resource "azurerm_storage_container" "test" {
 `, data.RandomInteger, data.Locations.Primary, data.RandomString, accessLevel)
 }
 
-func (r StorageBlobResource) templatePremium(data acceptance.TestData, accessLevel string) string {
+func (r StorageBlobResource) templatePremium(data acceptance.TestData) string {
 	if !features.FivePointOh() {
 		return fmt.Sprintf(`
 resource "azurerm_resource_group" "test" {
@@ -2080,9 +2080,9 @@ resource "azurerm_storage_account" "test" {
 resource "azurerm_storage_container" "test" {
   name                  = "test"
   storage_account_name  = azurerm_storage_account.test.name
-  container_access_type = "%s"
+  container_access_type = "private"
 }
-`, data.RandomInteger, data.Locations.Primary, data.RandomString, accessLevel)
+`, data.RandomInteger, data.Locations.Primary, data.RandomString)
 	}
 	return fmt.Sprintf(`
 resource "azurerm_resource_group" "test" {
@@ -2102,9 +2102,9 @@ resource "azurerm_storage_account" "test" {
 resource "azurerm_storage_container" "test" {
   name                  = "test"
   storage_account_id    = azurerm_storage_account.test.id
-  container_access_type = "%s"
+  container_access_type = "private"
 }
-`, data.RandomInteger, data.Locations.Primary, data.RandomString, accessLevel)
+`, data.RandomInteger, data.Locations.Primary, data.RandomString)
 }
 
 func (r StorageBlobResource) archive(data acceptance.TestData) string {
