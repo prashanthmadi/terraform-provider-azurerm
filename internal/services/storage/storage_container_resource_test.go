@@ -16,9 +16,9 @@ import (
 	"github.com/hashicorp/terraform-provider-azurerm/internal/acceptance/check"
 	"github.com/hashicorp/terraform-provider-azurerm/internal/clients"
 	"github.com/hashicorp/terraform-provider-azurerm/internal/features"
+	storageclient "github.com/hashicorp/terraform-provider-azurerm/internal/services/storage/client"
 	"github.com/hashicorp/terraform-provider-azurerm/internal/services/storage/validate"
 	"github.com/hashicorp/terraform-provider-azurerm/internal/tf/pluginsdk"
-	storageclient "github.com/hashicorp/terraform-provider-azurerm/internal/services/storage/client"
 	"github.com/jackofallops/giovanni/storage/2023-11-03/blob/containers"
 )
 
@@ -348,7 +348,7 @@ resource "azurerm_storage_container" "test" {
 func (r StorageContainerResource) basicAzureADAuth(data acceptance.TestData) string {
 	if !features.FivePointOh() {
 		return fmt.Sprintf(`
-provider "azurerm" {		
+provider "azurerm" {
   storage_use_azuread = true
   features {}
 }
@@ -674,13 +674,24 @@ func TestValidateStorageContainerName(t *testing.T) {
 }
 
 func (r StorageContainerResource) withAccountName(data acceptance.TestData) string {
-	return fmt.Sprintf(`
-%s
+	if !features.FivePointOh() {
+		return fmt.Sprintf(`
+		%s
 
 resource "azurerm_storage_container" "test" {
   name                  = "vhds"
   storage_account_name  = azurerm_storage_account.test.name
   container_access_type = "private"
 }
-`, r.template(data))
+		`, r.template(data))
+	}
+	return fmt.Sprintf(`
+	%s
+
+resource "azurerm_storage_container" "test" {
+  name                  = "vhds"
+  storage_account_id    = azurerm_storage_account.test.id
+  container_access_type = "private"
+}
+	`, r.template(data))
 }
