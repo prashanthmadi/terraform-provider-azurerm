@@ -22,6 +22,7 @@ import (
 	"github.com/hashicorp/terraform-provider-azurerm/internal/acceptance/check"
 	"github.com/hashicorp/terraform-provider-azurerm/internal/clients"
 	"github.com/hashicorp/terraform-provider-azurerm/internal/tf/pluginsdk"
+	storageclient "github.com/hashicorp/terraform-provider-azurerm/internal/services/storage/client"
 	"github.com/jackofallops/giovanni/storage/2023-11-03/blob/blobs"
 )
 
@@ -551,12 +552,20 @@ func (r StorageBlobResource) Exists(ctx context.Context, client *clients.Client,
 	if err != nil {
 		return nil, err
 	}
-	account, err := client.Storage.FindAccount(ctx, client.Account.SubscriptionId, id.AccountId.AccountName)
-	if err != nil {
-		return nil, err
-	}
-	if account == nil {
-		return nil, fmt.Errorf("unable to locate Account %q for Blob %q (Container %q)", id.AccountId.AccountName, id.BlobName, id.ContainerName)
+	var account *storageclient.AccountDetails
+	if client.Storage.StorageUseAzureAD {
+		account = &storageclient.AccountDetails{
+			StorageAccountId: commonids.NewStorageAccountID(client.Account.SubscriptionId, "", id.AccountId.AccountName),
+		}
+	} else {
+		var err error
+		account, err = client.Storage.FindAccount(ctx, client.Account.SubscriptionId, id.AccountId.AccountName)
+		if err != nil {
+			return nil, err
+		}
+		if account == nil {
+			return nil, fmt.Errorf("unable to locate Account %q for Blob %q (Container %q)", id.AccountId.AccountName, id.BlobName, id.ContainerName)
+		}
 	}
 	blobsClient, err := client.Storage.BlobsDataPlaneClient(ctx, *account, client.Storage.DataPlaneOperationSupportingAnyAuthMethod())
 	if err != nil {

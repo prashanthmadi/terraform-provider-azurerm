@@ -18,6 +18,7 @@ import (
 	"github.com/hashicorp/terraform-provider-azurerm/internal/features"
 	"github.com/hashicorp/terraform-provider-azurerm/internal/services/storage/validate"
 	"github.com/hashicorp/terraform-provider-azurerm/internal/tf/pluginsdk"
+	storageclient "github.com/hashicorp/terraform-provider-azurerm/internal/services/storage/client"
 	"github.com/jackofallops/giovanni/storage/2023-11-03/blob/containers"
 )
 
@@ -254,12 +255,20 @@ func (r StorageContainerResource) Exists(ctx context.Context, client *clients.Cl
 			return nil, err
 		}
 
-		account, err := client.Storage.FindAccount(ctx, client.Account.SubscriptionId, id.AccountId.AccountName)
-		if err != nil {
-			return nil, fmt.Errorf("retrieving Account %q for Container %q: %+v", id.AccountId.AccountName, id.ContainerName, err)
-		}
-		if account == nil {
-			return nil, fmt.Errorf("unable to locate Storage Account %q", id.AccountId.AccountName)
+		var account *storageclient.AccountDetails
+		if client.Storage.StorageUseAzureAD {
+			account = &storageclient.AccountDetails{
+				StorageAccountId: commonids.NewStorageAccountID(client.Account.SubscriptionId, "", id.AccountId.AccountName),
+			}
+		} else {
+			var err error
+			account, err = client.Storage.FindAccount(ctx, client.Account.SubscriptionId, id.AccountId.AccountName)
+			if err != nil {
+				return nil, fmt.Errorf("retrieving Account %q for Container %q: %+v", id.AccountId.AccountName, id.ContainerName, err)
+			}
+			if account == nil {
+				return nil, fmt.Errorf("unable to locate Storage Account %q", id.AccountId.AccountName)
+			}
 		}
 
 		containersClient, err := client.Storage.ContainersDataPlaneClient(ctx, *account, client.Storage.DataPlaneOperationSupportingAnyAuthMethod())
@@ -339,7 +348,7 @@ resource "azurerm_storage_container" "test" {
 func (r StorageContainerResource) basicAzureADAuth(data acceptance.TestData) string {
 	if !features.FivePointOh() {
 		return fmt.Sprintf(`
-provider "azurerm" {
+provider "azurerm" {		
   storage_use_azuread = true
   features {}
 }
