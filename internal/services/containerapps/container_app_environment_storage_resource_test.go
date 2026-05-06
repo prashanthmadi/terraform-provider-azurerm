@@ -8,6 +8,8 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/hashicorp/terraform-provider-azurerm/internal/features"
+
 	"github.com/hashicorp/go-azure-helpers/lang/pointer"
 	"github.com/hashicorp/go-azure-helpers/lang/response"
 	"github.com/hashicorp/go-azure-sdk/resource-manager/containerapps/2025-07-01/managedenvironmentsstorages"
@@ -178,7 +180,8 @@ resource "azurerm_container_app_environment_storage" "import" {
 }
 
 func (r ContainerAppEnvironmentStorageResource) template(data acceptance.TestData) string {
-	return fmt.Sprintf(`
+	if !features.FivePointOh() {
+		return fmt.Sprintf(`
 resource "azurerm_resource_group" "test" {
   name     = "acctestRG-CAE-%[1]d"
   location = "%[2]s"
@@ -218,5 +221,53 @@ resource "azurerm_container_app_environment" "test" {
   log_analytics_workspace_id = azurerm_log_analytics_workspace.test.id
 }
 
-`, data.RandomInteger, data.Locations.Primary, data.RandomString)
+
+
+		
+		`, data.RandomInteger, data.Locations.Primary, data.RandomString)
+	}
+	return fmt.Sprintf(`
+resource "azurerm_resource_group" "test" {
+  name     = "acctestRG-CAE-%[1]d"
+  location = "%[2]s"
+}
+
+resource "azurerm_log_analytics_workspace" "test" {
+  name                = "acctestLAW-%[1]d"
+  location            = azurerm_resource_group.test.location
+  resource_group_name = azurerm_resource_group.test.name
+  sku                 = "PerGB2018"
+  retention_in_days   = 30
+}
+
+resource "azurerm_storage_account" "test" {
+  name                = "unlikely23exst2acct%[3]s"
+  resource_group_name = azurerm_resource_group.test.name
+
+  location                 = azurerm_resource_group.test.location
+  account_tier             = "Standard"
+  account_replication_type = "LRS"
+
+  tags = {
+    environment = "accTest"
+  }
+}
+
+resource "azurerm_storage_share" "test" {
+  name               = "testshare%[3]s"
+  storage_account_id = azurerm_storage_account.test.id
+  quota              = 1
+}
+
+resource "azurerm_container_app_environment" "test" {
+  name                       = "acctest-CAEnv%[1]d"
+  resource_group_name        = azurerm_resource_group.test.name
+  location                   = azurerm_resource_group.test.location
+  log_analytics_workspace_id = azurerm_log_analytics_workspace.test.id
+}
+
+
+
+	
+	`, data.RandomInteger, data.Locations.Primary, data.RandomString)
 }
