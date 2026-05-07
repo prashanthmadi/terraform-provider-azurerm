@@ -261,6 +261,16 @@ func (p *azureRmFrameworkProvider) Schema(_ context.Context, _ provider.SchemaRe
 					listvalidator.SizeBetween(1, 1),
 				},
 				NestedObject: schema.NestedBlockObject{
+					Attributes: map[string]schema.Attribute{
+						"save_state_before_polling": schema.BoolAttribute{
+							Optional:    true,
+							Description: "Whether to save resources to state before polling asynchronous operations for completion. Defaults to `false`.",
+						},
+						"skip_existence_check_and_allow_overwrite": schema.BoolAttribute{
+							Optional:    true,
+							Description: "Whether to skip the existing resource check. Defaults to `false`",
+						},
+					},
 					Blocks: map[string]schema.Block{
 						"api_management": schema.ListNestedBlock{
 							NestedObject: schema.NestedBlockObject{

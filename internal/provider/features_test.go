@@ -21,6 +21,8 @@ func TestExpandFeatures(t *testing.T) {
 			Name:  "Empty Block",
 			Input: []interface{}{},
 			Expected: features.UserFeatures{
+				SaveStateBeforePolling:              false,
+				SkipExistenceCheckAndAllowOverwrite: false,
 				ApiManagement: features.ApiManagementFeatures{
 					PurgeSoftDeleteOnDestroy: true,
 					RecoverSoftDeleted:       true,
@@ -108,6 +110,8 @@ func TestExpandFeatures(t *testing.T) {
 			Name: "Complete Enabled",
 			Input: []interface{}{
 				map[string]interface{}{
+					"save_state_before_polling":                true,
+					"skip_existence_check_and_allow_overwrite": true,
 					"api_management": []interface{}{
 						map[string]interface{}{
 							"purge_soft_delete_on_destroy": true,
@@ -226,6 +230,8 @@ func TestExpandFeatures(t *testing.T) {
 				},
 			},
 			Expected: features.UserFeatures{
+				SaveStateBeforePolling:              true,
+				SkipExistenceCheckAndAllowOverwrite: true,
 				ApiManagement: features.ApiManagementFeatures{
 					PurgeSoftDeleteOnDestroy: true,
 					RecoverSoftDeleted:       true,
@@ -313,6 +319,8 @@ func TestExpandFeatures(t *testing.T) {
 			Name: "Complete Disabled",
 			Input: []interface{}{
 				map[string]interface{}{
+					"save_state_before_polling":                false,
+					"skip_existence_check_and_allow_overwrite": false,
 					"api_management": []interface{}{
 						map[string]interface{}{
 							"purge_soft_delete_on_destroy": false,
@@ -431,6 +439,8 @@ func TestExpandFeatures(t *testing.T) {
 				},
 			},
 			Expected: features.UserFeatures{
+				SaveStateBeforePolling:              false,
+				SkipExistenceCheckAndAllowOverwrite: false,
 				ApiManagement: features.ApiManagementFeatures{
 					PurgeSoftDeleteOnDestroy: false,
 					RecoverSoftDeleted:       false,

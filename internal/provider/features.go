@@ -15,6 +15,20 @@ func schemaFeatures(supportLegacyTestSuite bool) *pluginsdk.Schema {
 	// NOTE: if there's only one nested field these want to be Required (since there's no point
 	//       specifying the block otherwise) - however for 2+ they should be optional
 	featuresMap := map[string]*pluginsdk.Schema{
+		"save_state_before_polling": {
+			Type:        schema.TypeBool,
+			Optional:    true,
+			Default:     false,
+			Description: "Whether to save resources to state before polling asynchronous operations for completion. Defaults to `false`.",
+		},
+
+		"skip_existence_check_and_allow_overwrite": {
+			Type:        schema.TypeBool,
+			Optional:    true,
+			Default:     false,
+			Description: "Whether to skip the existing resource check. Defaults to `false`",
+		},
+
 		// lintignore:XS003
 		"api_management": {
 			Type:     pluginsdk.TypeList,
@@ -472,6 +486,14 @@ func expandFeatures(input []interface{}) features.UserFeatures {
 	}
 
 	val := input[0].(map[string]interface{})
+
+	if v, ok := val["save_state_before_polling"]; ok {
+		featuresMap.SaveStateBeforePolling = v.(bool)
+	}
+
+	if v, ok := val["skip_existence_check_and_allow_overwrite"]; ok {
+		featuresMap.SkipExistenceCheckAndAllowOverwrite = v.(bool)
+	}
 
 	if raw, ok := val["api_management"]; ok {
 		items := raw.([]interface{})

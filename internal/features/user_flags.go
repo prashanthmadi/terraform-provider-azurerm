@@ -4,6 +4,9 @@
 package features
 
 type UserFeatures struct {
+	SaveStateBeforePolling              bool
+	SkipExistenceCheckAndAllowOverwrite bool
+
 	ApiManagement            ApiManagementFeatures
 	AppConfiguration         AppConfigurationFeatures
 	ApplicationInsights      ApplicationInsightFeatures
