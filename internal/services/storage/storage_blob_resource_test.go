@@ -1841,10 +1841,10 @@ resource "azurerm_storage_blob" "import" {
 	%s
 
 resource "azurerm_storage_blob" "import" {
-  name                   = azurerm_storage_blob.test.name
-  storage_container_name = azurerm_storage_blob.test.storage_container_id
-  type                   = azurerm_storage_blob.test.type
-  size                   = azurerm_storage_blob.test.size
+  name                 = azurerm_storage_blob.test.name
+  storage_container_id = azurerm_storage_blob.test.storage_container_id
+  type                 = azurerm_storage_blob.test.type
+  size                 = azurerm_storage_blob.test.size
 }
 `, r.blockFromPublicBlob(data))
 }
