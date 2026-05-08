@@ -220,11 +220,7 @@ resource "azurerm_container_app_environment" "test" {
   location                   = azurerm_resource_group.test.location
   log_analytics_workspace_id = azurerm_log_analytics_workspace.test.id
 }
-
-
-
-		
-		`, data.RandomInteger, data.Locations.Primary, data.RandomString)
+`, data.RandomInteger, data.Locations.Primary, data.RandomString)
 	}
 	return fmt.Sprintf(`
 resource "azurerm_resource_group" "test" {
@@ -265,9 +261,5 @@ resource "azurerm_container_app_environment" "test" {
   location                   = azurerm_resource_group.test.location
   log_analytics_workspace_id = azurerm_log_analytics_workspace.test.id
 }
-
-
-
-	
-	`, data.RandomInteger, data.Locations.Primary, data.RandomString)
+`, data.RandomInteger, data.Locations.Primary, data.RandomString)
 }

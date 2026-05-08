@@ -202,15 +202,7 @@ resource "azurerm_container_app_environment_dapr_component" "test" {
 
   scopes = ["testapp"]
 }
-
-
-
-
-
-
-		
-		
-		`, r.template(data), data.RandomInteger, data.RandomString)
+`, r.template(data), data.RandomInteger, data.RandomString)
 	}
 	return fmt.Sprintf(`
 provider "azurerm" {
@@ -274,15 +266,7 @@ resource "azurerm_container_app_environment_dapr_component" "test" {
 
   scopes = ["testapp"]
 }
-
-
-
-
-
-
-	
-	
-	`, r.template(data), data.RandomInteger, data.RandomString)
+`, r.template(data), data.RandomInteger, data.RandomString)
 }
 
 func (r ContainerAppEnvironmentDaprComponentResource) completeUpdate(data acceptance.TestData) string {
@@ -344,7 +328,7 @@ resource "azurerm_container_app_environment_dapr_component" "test" {
 
   scopes = ["testapp", "updatedapp"]
 }
-		`, r.template(data), data.RandomInteger, data.RandomString)
+`, r.template(data), data.RandomInteger, data.RandomString)
 	}
 	return fmt.Sprintf(`
 provider "azurerm" {
@@ -403,7 +387,7 @@ resource "azurerm_container_app_environment_dapr_component" "test" {
 
   scopes = ["testapp", "updatedapp"]
 }
-	`, r.template(data), data.RandomInteger, data.RandomString)
+`, r.template(data), data.RandomInteger, data.RandomString)
 }
 
 func (r ContainerAppEnvironmentDaprComponentResource) template(data acceptance.TestData) string {

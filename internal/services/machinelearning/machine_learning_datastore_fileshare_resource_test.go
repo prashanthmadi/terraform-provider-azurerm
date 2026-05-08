@@ -8,14 +8,13 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/hashicorp/terraform-provider-azurerm/internal/features"
-
 	"github.com/hashicorp/go-azure-helpers/lang/pointer"
 	"github.com/hashicorp/go-azure-helpers/lang/response"
 	"github.com/hashicorp/go-azure-sdk/resource-manager/machinelearningservices/2025-06-01/datastore"
 	"github.com/hashicorp/terraform-provider-azurerm/internal/acceptance"
 	"github.com/hashicorp/terraform-provider-azurerm/internal/acceptance/check"
 	"github.com/hashicorp/terraform-provider-azurerm/internal/clients"
+	"github.com/hashicorp/terraform-provider-azurerm/internal/features"
 	"github.com/hashicorp/terraform-provider-azurerm/internal/tf/pluginsdk"
 )
 
@@ -197,23 +196,7 @@ resource "azurerm_machine_learning_datastore_fileshare" "test" {
   storage_fileshare_id    = azurerm_storage_share.test.resource_manager_id
   shared_access_signature = data.azurerm_storage_account_sas.test.sas
 }
-
-
-
-
-
-
-
-
-
-
-
-
-		
-		
-		
-		
-		`, template, data.RandomInteger)
+`, template, data.RandomInteger)
 	}
 	return fmt.Sprintf(`
 	%s
@@ -265,23 +248,7 @@ resource "azurerm_machine_learning_datastore_fileshare" "test" {
   storage_fileshare_id    = azurerm_storage_share.test.resource_manager_id
   shared_access_signature = data.azurerm_storage_account_sas.test.sas
 }
-
-
-
-
-
-
-
-
-
-
-
-
-	
-	
-	
-	
-	`, template, data.RandomInteger)
+`, template, data.RandomInteger)
 }
 
 func (r MachineLearningDataStoreFileShare) requiresImport(data acceptance.TestData) string {
