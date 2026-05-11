@@ -79,7 +79,7 @@ func resourceEventHubNamespaceDisasterRecoveryConfigCreate(d *pluginsdk.Resource
 
 	id := disasterrecoveryconfigs.NewDisasterRecoveryConfigID(subscriptionId, d.Get("resource_group_name").(string), d.Get("namespace_name").(string), d.Get("name").(string))
 
-	if d.IsNewResource() {
+	if !meta.(*clients.Client).Features.SkipExistenceCheckAndAllowOverwrite {
 		existing, err := client.Get(ctx, id)
 		if err != nil {
 			if !response.WasNotFound(existing.HttpResponse) {
@@ -105,11 +105,12 @@ func resourceEventHubNamespaceDisasterRecoveryConfigCreate(d *pluginsdk.Resource
 		return fmt.Errorf("creating %s: %+v", id, err)
 	}
 
+	d.SetId(id.ID())
+
 	if err := resourceEventHubNamespaceDisasterRecoveryConfigWaitForState(ctx, client, id); err != nil {
 		return fmt.Errorf("waiting for replication of %s: %+v", id, err)
 	}
 
-	d.SetId(id.ID())
 	return resourceEventHubNamespaceDisasterRecoveryConfigRead(d, meta)
 }
 

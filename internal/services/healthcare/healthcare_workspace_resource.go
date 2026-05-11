@@ -15,6 +15,7 @@ import (
 	"github.com/hashicorp/go-azure-sdk/resource-manager/healthcareapis/2024-03-31/workspaces"
 	"github.com/hashicorp/terraform-provider-azurerm/helpers/tf"
 	"github.com/hashicorp/terraform-provider-azurerm/internal/clients"
+	"github.com/hashicorp/terraform-provider-azurerm/internal/sdk"
 	"github.com/hashicorp/terraform-provider-azurerm/internal/services/healthcare/validate"
 	"github.com/hashicorp/terraform-provider-azurerm/internal/tf/pluginsdk"
 	"github.com/hashicorp/terraform-provider-azurerm/internal/timeouts"
@@ -82,7 +83,7 @@ func resourceHealthcareApisWorkspaceCreate(d *pluginsdk.ResourceData, meta inter
 	log.Printf("[INFO] preparing arguments for AzureRM Healthcare Workspace creation.")
 
 	id := workspaces.NewWorkspaceID(subscriptionId, d.Get("resource_group_name").(string), d.Get("name").(string))
-	if d.IsNewResource() {
+	if !meta.(*clients.Client).Features.SkipExistenceCheckAndAllowOverwrite {
 		existing, err := client.Get(ctx, id)
 		if err != nil {
 			if !response.WasNotFound(existing.HttpResponse) {
@@ -102,7 +103,7 @@ func resourceHealthcareApisWorkspaceCreate(d *pluginsdk.ResourceData, meta inter
 		Tags:     tags.Expand(t),
 	}
 
-	err := client.CreateOrUpdateThenPoll(ctx, id, parameters)
+	err := client.CreateOrUpdateCallbackThenPoll(ctx, id, parameters, sdk.SetIDCallback(meta, &id, d))
 	if err != nil {
 		return fmt.Errorf("creating/ updating %s: %+v", id, err)
 	}
@@ -168,8 +169,6 @@ func resourceHealthcareApisWorkspaceUpdate(d *pluginsdk.ResourceData, meta inter
 	if err != nil {
 		return fmt.Errorf("updating %s: %+v", id, err)
 	}
-
-	d.SetId(id.ID())
 
 	return resourceHealthcareApisWorkspaceRead(d, meta)
 }
