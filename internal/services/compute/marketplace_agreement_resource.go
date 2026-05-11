@@ -80,23 +80,26 @@ func resourceMarketplaceAgreementCreate(d *pluginsdk.ResourceData, meta interfac
 	log.Printf("[DEBUG] retrieving %s", id)
 
 	agreementId := agreements.NewOfferPlanID(id.SubscriptionId, id.PublisherId, id.OfferId, id.PlanId)
-	term, err := client.MarketplaceAgreementsGet(ctx, agreementId)
-	if err != nil {
-		if !response.WasNotFound(term.HttpResponse) {
-			return fmt.Errorf("retrieving %s: %s", id, err)
-		}
-	}
 
-	accepted := false
-	if model := term.Model; model != nil {
-		if props := model.Properties; props != nil {
-			if acc := props.Accepted; acc != nil {
-				accepted = *acc
+	if !meta.(*clients.Client).Features.SkipExistenceCheckAndAllowOverwrite {
+		term, err := client.MarketplaceAgreementsGet(ctx, agreementId)
+		if err != nil {
+			if !response.WasNotFound(term.HttpResponse) {
+				return fmt.Errorf("retrieving %s: %s", id, err)
 			}
 		}
-	}
-	if accepted {
-		return tf.ImportAsExistsError("azurerm_marketplace_agreement", id.ID())
+
+		accepted := false
+		if model := term.Model; model != nil {
+			if props := model.Properties; props != nil {
+				if acc := props.Accepted; acc != nil {
+					accepted = *acc
+				}
+			}
+		}
+		if accepted {
+			return tf.ImportAsExistsError("azurerm_marketplace_agreement", id.ID())
+		}
 	}
 
 	resp, err := client.MarketplaceAgreementsGet(ctx, agreementId)

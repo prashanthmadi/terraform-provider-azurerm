@@ -148,15 +148,17 @@ func resourceCdnFrontDoorCustomDomainCreate(d *pluginsdk.ResourceData, meta inte
 
 	id := parse.NewFrontDoorCustomDomainID(profileId.SubscriptionId, profileId.ResourceGroupName, profileId.ProfileName, d.Get("name").(string))
 
-	existing, err := client.Get(ctx, id.ResourceGroup, id.ProfileName, id.CustomDomainName)
-	if err != nil {
-		if !utils.ResponseWasNotFound(existing.Response) {
-			return fmt.Errorf("checking for existing %s: %+v", id, err)
+	if !meta.(*clients.Client).Features.SkipExistenceCheckAndAllowOverwrite {
+		existing, err := client.Get(ctx, id.ResourceGroup, id.ProfileName, id.CustomDomainName)
+		if err != nil {
+			if !utils.ResponseWasNotFound(existing.Response) {
+				return fmt.Errorf("checking for existing %s: %+v", id, err)
+			}
 		}
-	}
 
-	if !utils.ResponseWasNotFound(existing.Response) {
-		return tf.ImportAsExistsError("azurerm_cdn_frontdoor_custom_domain", id.ID())
+		if !utils.ResponseWasNotFound(existing.Response) {
+			return tf.ImportAsExistsError("azurerm_cdn_frontdoor_custom_domain", id.ID())
+		}
 	}
 
 	dnsZone := d.Get("dns_zone_id").(string)

@@ -124,7 +124,7 @@ func resourceBatchCertificateCreate(d *pluginsdk.ResourceData, meta interface{})
 		return err
 	}
 
-	if d.IsNewResource() {
+	if !meta.(*clients.Client).Features.SkipExistenceCheckAndAllowOverwrite {
 		existing, err := client.Get(ctx, id)
 		if err != nil {
 			if !response.WasNotFound(existing.HttpResponse) {
@@ -136,6 +136,7 @@ func resourceBatchCertificateCreate(d *pluginsdk.ResourceData, meta interface{})
 			return tf.ImportAsExistsError("azurerm_batch_certificate", id.ID())
 		}
 	}
+
 	certificateProperties := certificate.CertificateCreateOrUpdateProperties{
 		Data:                cert,
 		Format:              pointer.To(certificate.CertificateFormat(format)),

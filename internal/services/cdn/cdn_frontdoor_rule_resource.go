@@ -14,6 +14,7 @@ import (
 	"github.com/hashicorp/go-azure-sdk/resource-manager/cdn/2024-09-01/rules"
 	"github.com/hashicorp/terraform-provider-azurerm/helpers/tf"
 	"github.com/hashicorp/terraform-provider-azurerm/internal/clients"
+	"github.com/hashicorp/terraform-provider-azurerm/internal/sdk"
 	cdnFrontDoorRuleActions "github.com/hashicorp/terraform-provider-azurerm/internal/services/cdn/frontdoorruleactions"
 	cdnFrontDoorRuleConditions "github.com/hashicorp/terraform-provider-azurerm/internal/services/cdn/frontdoorruleconditions"
 	"github.com/hashicorp/terraform-provider-azurerm/internal/services/cdn/validate"
@@ -601,15 +602,17 @@ func resourceCdnFrontDoorRuleCreate(d *pluginsdk.ResourceData, meta interface{})
 
 	id := rules.NewRuleID(ruleSetId.SubscriptionId, ruleSetId.ResourceGroupName, ruleSetId.ProfileName, ruleSetId.RuleSetName, d.Get("name").(string))
 
-	result, err := client.Get(ctx, id)
-	if err != nil {
-		if !response.WasNotFound(result.HttpResponse) {
-			return fmt.Errorf("checking for existing %s: %+v", id, err)
+	if !meta.(*clients.Client).Features.SkipExistenceCheckAndAllowOverwrite {
+		result, err := client.Get(ctx, id)
+		if err != nil {
+			if !response.WasNotFound(result.HttpResponse) {
+				return fmt.Errorf("checking for existing %s: %+v", id, err)
+			}
 		}
-	}
 
-	if !response.WasNotFound(result.HttpResponse) {
-		return tf.ImportAsExistsError("azurerm_cdn_frontdoor_rule", id.ID())
+		if !response.WasNotFound(result.HttpResponse) {
+			return tf.ImportAsExistsError("azurerm_cdn_frontdoor_rule", id.ID())
+		}
 	}
 
 	matchProcessingBehaviorValue := pointer.To(rules.MatchProcessingBehavior(d.Get("behavior_on_match").(string)))
@@ -635,8 +638,7 @@ func resourceCdnFrontDoorRuleCreate(d *pluginsdk.ResourceData, meta interface{})
 		},
 	}
 
-	err = client.CreateThenPoll(ctx, id, props)
-	if err != nil {
+	if err := client.CreateCallbackThenPoll(ctx, id, props, sdk.SetIDCallback(meta, &id, d)); err != nil {
 		return fmt.Errorf("creating %s: %+v", id, err)
 	}
 

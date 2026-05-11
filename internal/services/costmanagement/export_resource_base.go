@@ -136,15 +136,18 @@ func (br costManagementExportBaseResource) createFunc(resourceName, scopeFieldNa
 			client := metadata.Client.CostManagement.ExportClient
 			id := exports.NewScopedExportID(metadata.ResourceData.Get(scopeFieldName).(string), metadata.ResourceData.Get("name").(string))
 			var opts exports.GetOperationOptions
-			existing, err := client.Get(ctx, id, opts)
-			if err != nil {
-				if !response.WasNotFound(existing.HttpResponse) {
-					return fmt.Errorf("checking for presence of existing %s: %+v", id, err)
-				}
-			}
 
-			if !response.WasNotFound(existing.HttpResponse) {
-				return tf.ImportAsExistsError(resourceName, id.ID())
+			if !metadata.Client.Features.SkipExistenceCheckAndAllowOverwrite {
+				existing, err := client.Get(ctx, id, opts)
+				if err != nil {
+					if !response.WasNotFound(existing.HttpResponse) {
+						return fmt.Errorf("checking for presence of existing %s: %+v", id, err)
+					}
+				}
+
+				if !response.WasNotFound(existing.HttpResponse) {
+					return tf.ImportAsExistsError(resourceName, id.ID())
+				}
 			}
 
 			if err := createOrUpdateCostManagementExport(ctx, client, metadata, id, nil); err != nil {
