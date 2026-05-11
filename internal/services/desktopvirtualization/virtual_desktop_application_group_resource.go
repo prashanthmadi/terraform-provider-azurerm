@@ -121,15 +121,17 @@ func resourceVirtualDesktopApplicationGroupCreateUpdate(d *pluginsdk.ResourceDat
 
 	id := applicationgroup.NewApplicationGroupID(subscriptionId, resourceGroup, name)
 	if d.IsNewResource() {
-		existing, err := client.Get(ctx, id)
-		if err != nil {
-			if !response.WasNotFound(existing.HttpResponse) {
-				return fmt.Errorf("checking for presence of existing %s: %+v", id, err)
+		if !meta.(*clients.Client).Features.SkipExistenceCheckAndAllowOverwrite {
+			existing, err := client.Get(ctx, id)
+			if err != nil {
+				if !response.WasNotFound(existing.HttpResponse) {
+					return fmt.Errorf("checking for presence of existing %s: %+v", id, err)
+				}
 			}
-		}
 
-		if !response.WasNotFound(existing.HttpResponse) {
-			return tf.ImportAsExistsError("azurerm_virtual_desktop_application_group", id.ID())
+			if !response.WasNotFound(existing.HttpResponse) {
+				return tf.ImportAsExistsError("azurerm_virtual_desktop_application_group", id.ID())
+			}
 		}
 	}
 
@@ -150,6 +152,7 @@ func resourceVirtualDesktopApplicationGroupCreateUpdate(d *pluginsdk.ResourceDat
 	if _, err := client.CreateOrUpdate(ctx, id, payload); err != nil {
 		return fmt.Errorf("creating Virtual Desktop Application Group %q (Resource Group %q): %+v", name, resourceGroup, err)
 	}
+	d.SetId(id.ID())
 
 	if applicationgroup.ApplicationGroupType(d.Get("type").(string)) == applicationgroup.ApplicationGroupTypeDesktop {
 		if desktopFriendlyName := pointer.To(d.Get("default_desktop_display_name").(string)); desktopFriendlyName != nil {
@@ -174,8 +177,6 @@ func resourceVirtualDesktopApplicationGroupCreateUpdate(d *pluginsdk.ResourceDat
 			}
 		}
 	}
-
-	d.SetId(id.ID())
 
 	return resourceVirtualDesktopApplicationGroupRead(d, meta)
 }

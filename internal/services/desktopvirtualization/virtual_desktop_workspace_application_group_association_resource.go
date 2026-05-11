@@ -103,7 +103,9 @@ func resourceVirtualDesktopWorkspaceApplicationGroupAssociationCreate(d *plugins
 
 	applicationGroupIdStr := applicationGroupId.ID()
 	if associationExists(model.Properties, applicationGroupIdStr) {
-		return tf.ImportAsExistsError("azurerm_virtual_desktop_workspace_application_group_association", associationId)
+		if !meta.(*clients.Client).Features.SkipExistenceCheckAndAllowOverwrite {
+			return tf.ImportAsExistsError("azurerm_virtual_desktop_workspace_application_group_association", associationId)
+		}
 	}
 	applicationGroupAssociations = append(applicationGroupAssociations, applicationGroupIdStr)
 
