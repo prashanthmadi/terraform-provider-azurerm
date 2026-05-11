@@ -152,14 +152,16 @@ func (r AadB2cDirectoryResource) Create() sdk.ResourceFunc {
 
 			id := tenants.NewB2CDirectoryID(subscriptionId, model.ResourceGroup, model.DomainName)
 
-			metadata.Logger.Infof("Import check for %s", id)
-			existing, err := client.Get(ctx, id)
-			if err != nil && !response.WasNotFound(existing.HttpResponse) {
-				return fmt.Errorf("checking for presence of existing %s: %+v", id, err)
-			}
+			if !metadata.Client.Features.SkipExistenceCheckAndAllowOverwrite {
+				metadata.Logger.Infof("Import check for %s", id)
+				existing, err := client.Get(ctx, id)
+				if err != nil && !response.WasNotFound(existing.HttpResponse) {
+					return fmt.Errorf("checking for presence of existing %s: %+v", id, err)
+				}
 
-			if !response.WasNotFound(existing.HttpResponse) {
-				return metadata.ResourceRequiresImport(r.ResourceType(), id)
+				if !response.WasNotFound(existing.HttpResponse) {
+					return metadata.ResourceRequiresImport(r.ResourceType(), id)
+				}
 			}
 
 			metadata.Logger.Infof("Domain name availability check for %s", id)
@@ -201,7 +203,7 @@ func (r AadB2cDirectoryResource) Create() sdk.ResourceFunc {
 				Tags: &model.Tags,
 			}
 
-			if err := client.CreateThenPoll(ctx, id, properties); err != nil {
+			if err := client.CreateCallbackThenPoll(ctx, id, properties, metadata.SetIDCallback(&id)); err != nil {
 				return err
 			}
 
