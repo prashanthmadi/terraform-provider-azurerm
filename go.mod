@@ -19,7 +19,7 @@ require (
 	github.com/hashicorp/go-azure-helpers v0.79.0
 	github.com/hashicorp/go-azure-sdk/data-plane v0.20260417.1195006
 	github.com/hashicorp/go-azure-sdk/resource-manager v0.20260417.1195006
-	github.com/hashicorp/go-azure-sdk/sdk v0.20260417.1195006
+	github.com/hashicorp/go-azure-sdk/sdk v0.20260504.1170848
 	github.com/hashicorp/go-cty v1.5.0
 	github.com/hashicorp/go-hclog v1.6.3
 	github.com/hashicorp/go-multierror v1.1.1
@@ -109,6 +109,12 @@ require (
 	google.golang.org/grpc v1.79.3 // indirect
 	google.golang.org/protobuf v1.36.10 // indirect
 	software.sslmate.com/src/go-pkcs12 v0.6.0 // indirect
+)
+
+// TODO: remove once relevant PRs are merged
+replace (
+	github.com/hashicorp/go-azure-helpers => github.com/hashicorp/go-azure-helpers v0.79.1-0.20260508155553-0e9787e61ed2
+	github.com/hashicorp/go-azure-sdk/resource-manager => github.com/hashicorp/go-azure-sdk/resource-manager v0.20260504.1170849-0.20260511161758-1ae117ff9e90
 )
 
 go 1.25.9

@@ -139,7 +139,7 @@ github.com/google/uuid
 # github.com/hashicorp/errwrap v1.1.0
 ## explicit
 github.com/hashicorp/errwrap
-# github.com/hashicorp/go-azure-helpers v0.79.0
+# github.com/hashicorp/go-azure-helpers v0.79.0 => github.com/hashicorp/go-azure-helpers v0.79.1-0.20260508155553-0e9787e61ed2
 ## explicit; go 1.25.5
 github.com/hashicorp/go-azure-helpers/eventhub
 github.com/hashicorp/go-azure-helpers/framework/commonschema
@@ -184,7 +184,7 @@ github.com/hashicorp/go-azure-sdk/data-plane/keyvault/7-4/secrets
 github.com/hashicorp/go-azure-sdk/data-plane/keyvault/7-4/settings
 github.com/hashicorp/go-azure-sdk/data-plane/keyvault/7-4/storage
 github.com/hashicorp/go-azure-sdk/data-plane/synapse/2021-06-01-preview/managedprivateendpoints
-# github.com/hashicorp/go-azure-sdk/resource-manager v0.20260417.1195006
+# github.com/hashicorp/go-azure-sdk/resource-manager v0.20260417.1195006 => github.com/hashicorp/go-azure-sdk/resource-manager v0.20260504.1170849-0.20260511161758-1ae117ff9e90
 ## explicit; go 1.25.5
 github.com/hashicorp/go-azure-sdk/resource-manager/aad/2021-05-01/domainservices
 github.com/hashicorp/go-azure-sdk/resource-manager/aadb2c/2021-04-01-preview
@@ -1268,7 +1268,7 @@ github.com/hashicorp/go-azure-sdk/resource-manager/workloads/2024-09-01/sapappli
 github.com/hashicorp/go-azure-sdk/resource-manager/workloads/2024-09-01/sapcentralserverinstances
 github.com/hashicorp/go-azure-sdk/resource-manager/workloads/2024-09-01/sapdatabaseinstances
 github.com/hashicorp/go-azure-sdk/resource-manager/workloads/2024-09-01/sapvirtualinstances
-# github.com/hashicorp/go-azure-sdk/sdk v0.20260417.1195006
+# github.com/hashicorp/go-azure-sdk/sdk v0.20260504.1170848
 ## explicit; go 1.25.5
 github.com/hashicorp/go-azure-sdk/sdk/auth
 github.com/hashicorp/go-azure-sdk/sdk/auth/autorest
@@ -1861,3 +1861,5 @@ gopkg.in/yaml.v3
 ## explicit; go 1.19
 software.sslmate.com/src/go-pkcs12
 software.sslmate.com/src/go-pkcs12/internal/rc2
+# github.com/hashicorp/go-azure-helpers => github.com/hashicorp/go-azure-helpers v0.79.1-0.20260508155553-0e9787e61ed2
+# github.com/hashicorp/go-azure-sdk/resource-manager => github.com/hashicorp/go-azure-sdk/resource-manager v0.20260504.1170849-0.20260511161758-1ae117ff9e90
