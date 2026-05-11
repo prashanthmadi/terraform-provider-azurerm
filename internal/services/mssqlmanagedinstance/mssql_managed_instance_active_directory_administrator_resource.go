@@ -106,14 +106,16 @@ func (r MsSqlManagedInstanceActiveDirectoryAdministratorResource) Create() sdk.R
 			id := parse.NewManagedInstanceAzureActiveDirectoryAdministratorID(managedInstanceId.SubscriptionId,
 				managedInstanceId.ResourceGroupName, managedInstanceId.ManagedInstanceName, string(managedinstanceadministrators.ManagedInstanceAdministratorTypeActiveDirectory))
 
-			metadata.Logger.Infof("Import check for %s", id)
-			existing, err := client.Get(ctx, *managedInstanceId)
-			if err != nil && !response.WasNotFound(existing.HttpResponse) {
-				return fmt.Errorf("checking for presence of existing %s: %+v", id, err)
-			}
+			if !metadata.Client.Features.SkipExistenceCheckAndAllowOverwrite {
+				metadata.Logger.Infof("Import check for %s", id)
+				existing, err := client.Get(ctx, *managedInstanceId)
+				if err != nil && !response.WasNotFound(existing.HttpResponse) {
+					return fmt.Errorf("checking for presence of existing %s: %+v", id, err)
+				}
 
-			if !response.WasNotFound(existing.HttpResponse) {
-				return metadata.ResourceRequiresImport(r.ResourceType(), id)
+				if !response.WasNotFound(existing.HttpResponse) {
+					return metadata.ResourceRequiresImport(r.ResourceType(), id)
+				}
 			}
 
 			parameters := managedinstanceadministrators.ManagedInstanceAdministrator{
@@ -127,11 +129,10 @@ func (r MsSqlManagedInstanceActiveDirectoryAdministratorResource) Create() sdk.R
 
 			metadata.Logger.Infof("Creating %s", id)
 
-			err = client.CreateOrUpdateThenPoll(ctx, *managedInstanceId, parameters)
-			if err != nil {
+			// TODO: implement `CallbackThenPoll`, requires migrating to an ID that implements `resourceids.ResourceId`
+			if err := client.CreateOrUpdateThenPoll(ctx, *managedInstanceId, parameters); err != nil {
 				return fmt.Errorf("creating %s: %+v", id, err)
 			}
-
 			metadata.SetID(id)
 
 			aadAuthOnlyParams := managedinstanceazureadonlyauthentications.ManagedInstanceAzureADOnlyAuthentication{

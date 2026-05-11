@@ -123,6 +123,8 @@ func resourceMsSqlServerSecurityAlertPolicyCreate(d *pluginsdk.ResourceData, met
 
 	log.Printf("[INFO] preparing arguments for mssql server security alert policy creation")
 
+	// TODO: import check
+
 	payload := serversecurityalertpolicies.ServerSecurityAlertPolicy{}
 	resourceGroupName := d.Get("resource_group_name").(string)
 	serverName := d.Get("server_name").(string)
@@ -182,8 +184,8 @@ func resourceMsSqlServerSecurityAlertPolicyCreate(d *pluginsdk.ResourceData, met
 	payload.Properties = props
 	serverId := commonids.NewSqlServerID(subscriptionId, resourceGroupName, serverName)
 
-	err := client.CreateOrUpdateThenPoll(ctx, serverId, payload)
-	if err != nil {
+	// TODO: implement `CallbackThenPoll`, requires migrating to an ID that implements `resourceids.ResourceId`
+	if err := client.CreateOrUpdateThenPoll(ctx, serverId, payload); err != nil {
 		return fmt.Errorf("creating mssql server security alert policy: %+v", err)
 	}
 
