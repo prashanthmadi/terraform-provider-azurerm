@@ -212,7 +212,7 @@ resource "azurerm_logic_app_integration_account_assembly" "test" {
     foo = "bar2"
   }
 }
-		`, template, data.RandomString, data.RandomString, data.RandomInteger)
+`, template, data.RandomString, data.RandomString, data.RandomInteger)
 	}
 	return fmt.Sprintf(`
 	%s
@@ -251,5 +251,5 @@ resource "azurerm_logic_app_integration_account_assembly" "test" {
     foo = "bar2"
   }
 }
-	`, template, data.RandomString, data.RandomString, data.RandomInteger)
+`, template, data.RandomString, data.RandomString, data.RandomInteger)
 }

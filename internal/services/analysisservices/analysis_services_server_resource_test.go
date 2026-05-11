@@ -519,7 +519,7 @@ resource "azurerm_analysis_services_server" "test" {
 
   backup_blob_container_uri = "${azurerm_storage_account.test.primary_blob_endpoint}${azurerm_storage_container.test.name}${data.azurerm_storage_account_blob_container_sas.test.sas}"
 }
-		`, data.RandomInteger, data.Locations.Primary, data.RandomString, data.RandomInteger)
+`, data.RandomInteger, data.Locations.Primary, data.RandomString, data.RandomInteger)
 	}
 	return fmt.Sprintf(`
 provider "azurerm" {

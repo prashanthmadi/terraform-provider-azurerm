@@ -237,7 +237,6 @@ resource "azurerm_storage_mover_job_definition" "import" {
 }
 
 func (r StorageMoverJobDefinitionResource) complete(data acceptance.TestData) string {
-	template := r.template(data)
 	return fmt.Sprintf(`
 provider "azurerm" {
   features {
@@ -260,11 +259,10 @@ resource "azurerm_storage_mover_job_definition" "test" {
   target_sub_path          = "/"
   description              = "Example Job Definition Description"
 }
-`, template, data.RandomInteger)
+`, r.template(data), data.RandomInteger)
 }
 
 func (r StorageMoverJobDefinitionResource) update(data acceptance.TestData) string {
-	template := r.template(data)
 	return fmt.Sprintf(`
 provider "azurerm" {
   features {
@@ -287,5 +285,5 @@ resource "azurerm_storage_mover_job_definition" "test" {
   target_sub_path          = "/"
   description              = "Update example Job Definition Description"
 }
-`, template, data.RandomInteger)
+`, r.template(data), data.RandomInteger)
 }

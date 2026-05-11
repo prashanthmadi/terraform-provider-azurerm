@@ -4528,7 +4528,7 @@ data "azurerm_storage_account_sas" "test" {
     filter  = false
   }
 }
-		`, r.template(data, planSku))
+`, r.template(data, planSku))
 	}
 	return fmt.Sprintf(`
 	%s
@@ -4572,7 +4572,7 @@ data "azurerm_storage_account_sas" "test" {
     filter  = false
   }
 }
-	`, r.template(data, planSku))
+`, r.template(data, planSku))
 }
 
 func (r LinuxFunctionAppResource) storageWithVnetIntegrationTemplate(data acceptance.TestData, planSku string) string {
@@ -5108,7 +5108,7 @@ data "azurerm_storage_account_sas" "test" {
     filter  = false
   }
 }
-		`, r.template(data, planSKU), data.RandomInteger)
+`, r.template(data, planSKU), data.RandomInteger)
 	}
 	return fmt.Sprintf(`
 	%s
@@ -5172,5 +5172,5 @@ data "azurerm_storage_account_sas" "test" {
     filter  = false
   }
 }
-	`, r.template(data, planSKU), data.RandomInteger)
+`, r.template(data, planSKU), data.RandomInteger)
 }
