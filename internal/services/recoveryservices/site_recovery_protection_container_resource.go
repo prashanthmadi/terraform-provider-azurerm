@@ -7,6 +7,8 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/hashicorp/terraform-provider-azurerm/internal/sdk"
+
 	"github.com/hashicorp/go-azure-helpers/lang/response"
 	"github.com/hashicorp/go-azure-helpers/resourcemanager/commonschema"
 	"github.com/hashicorp/go-azure-sdk/resource-manager/recoveryservicessiterecovery/2024-04-01/replicationprotectioncontainers"
@@ -73,15 +75,17 @@ func resourceSiteRecoveryProtectionContainerCreate(d *pluginsdk.ResourceData, me
 	id := replicationprotectioncontainers.NewReplicationProtectionContainerID(subscriptionId, resGroup, vaultName, fabricName, name)
 
 	if d.IsNewResource() {
-		existing, err := client.Get(ctx, id)
-		if err != nil {
-			if !response.WasNotFound(existing.HttpResponse) {
-				return fmt.Errorf("checking for presence of existing site recovery protection container %s (fabric %s): %+v", name, fabricName, err)
+		if !meta.(*clients.Client).Features.SkipExistenceCheckAndAllowOverwrite {
+			existing, err := client.Get(ctx, id)
+			if err != nil {
+				if !response.WasNotFound(existing.HttpResponse) {
+					return fmt.Errorf("checking for presence of existing site recovery protection container %s (fabric %s): %+v", name, fabricName, err)
+				}
 			}
-		}
 
-		if existing.Model != nil && existing.Model.Id != nil && *existing.Model.Id != "" {
-			return tf.ImportAsExistsError("azurerm_site_recovery_protection_container", *existing.Model.Id)
+			if existing.Model != nil && existing.Model.Id != nil && *existing.Model.Id != "" {
+				return tf.ImportAsExistsError("azurerm_site_recovery_protection_container", *existing.Model.Id)
+			}
 		}
 	}
 
@@ -89,11 +93,9 @@ func resourceSiteRecoveryProtectionContainerCreate(d *pluginsdk.ResourceData, me
 		Properties: &replicationprotectioncontainers.CreateProtectionContainerInputProperties{},
 	}
 
-	err := client.CreateThenPoll(ctx, id, parameters)
-	if err != nil {
+	if err := client.CreateCallbackThenPoll(ctx, id, parameters, sdk.SetIDCallback(meta, &id, d)); err != nil {
 		return fmt.Errorf("creating site recovery protection container %s (fabric %s): %+v", name, fabricName, err)
 	}
-
 	d.SetId(id.ID())
 
 	return resourceSiteRecoveryProtectionContainerRead(d, meta)
