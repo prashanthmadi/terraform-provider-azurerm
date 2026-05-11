@@ -268,12 +268,14 @@ func (s SpringCloudCustomizedAcceleratorResource) Create() sdk.ResourceFunc {
 			}
 			id := appplatform.NewCustomizedAcceleratorID(springAcceleratorId.SubscriptionId, springAcceleratorId.ResourceGroupName, springAcceleratorId.SpringName, springAcceleratorId.ApplicationAcceleratorName, model.Name)
 
-			existing, err := client.CustomizedAcceleratorsGet(ctx, id)
-			if err != nil && !response.WasNotFound(existing.HttpResponse) {
-				return fmt.Errorf("checking for existing %s: %+v", id, err)
-			}
-			if !response.WasNotFound(existing.HttpResponse) {
-				return metadata.ResourceRequiresImport(s.ResourceType(), id)
+			if !metadata.Client.Features.SkipExistenceCheckAndAllowOverwrite {
+				existing, err := client.CustomizedAcceleratorsGet(ctx, id)
+				if err != nil && !response.WasNotFound(existing.HttpResponse) {
+					return fmt.Errorf("checking for existing %s: %+v", id, err)
+				}
+				if !response.WasNotFound(existing.HttpResponse) {
+					return metadata.ResourceRequiresImport(s.ResourceType(), id)
+				}
 			}
 
 			CustomizedAcceleratorResource := appplatform.CustomizedAcceleratorResource{
@@ -286,12 +288,10 @@ func (s SpringCloudCustomizedAcceleratorResource) Create() sdk.ResourceFunc {
 					GitRepository:   expandSpringCloudCustomizedAcceleratorGitRepository(model.GitRepository),
 				},
 			}
-			err = client.CustomizedAcceleratorsCreateOrUpdateThenPoll(ctx, id, CustomizedAcceleratorResource)
+			err = client.CustomizedAcceleratorsCreateOrUpdateCallbackThenPoll(ctx, id, CustomizedAcceleratorResource, metadata.SetIDCallback(&id))
 			if err != nil {
 				return fmt.Errorf("creating %s: %+v", id, err)
 			}
-
-			metadata.SetID(id)
 			return nil
 		},
 	}

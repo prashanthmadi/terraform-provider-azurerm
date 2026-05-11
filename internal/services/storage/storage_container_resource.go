@@ -224,7 +224,9 @@ func resourceStorageContainerCreate(d *pluginsdk.ResourceData, meta interface{})
 				return fmt.Errorf("checking for existing %s: %v", id, err)
 			}
 			if exists != nil && *exists {
-				return tf.ImportAsExistsError("azurerm_storage_container", id.ID())
+				if !meta.(*clients.Client).Features.SkipExistenceCheckAndAllowOverwrite {
+					return tf.ImportAsExistsError("azurerm_storage_container", id.ID())
+				}
 			}
 
 			log.Printf("[INFO] Creating %s", id)
@@ -258,14 +260,16 @@ func resourceStorageContainerCreate(d *pluginsdk.ResourceData, meta interface{})
 
 	id := commonids.NewStorageContainerID(subscriptionId, accountId.ResourceGroupName, accountId.StorageAccountName, containerName)
 
-	existing, err := containerClient.Get(ctx, id)
-	if err != nil {
-		if !response.WasNotFound(existing.HttpResponse) {
-			return fmt.Errorf("checking for existing %q: %v", id, err)
+	if !meta.(*clients.Client).Features.SkipExistenceCheckAndAllowOverwrite {
+		existing, err := containerClient.Get(ctx, id)
+		if err != nil {
+			if !response.WasNotFound(existing.HttpResponse) {
+				return fmt.Errorf("checking for existing %q: %v", id, err)
+			}
 		}
-	}
-	if !response.WasNotFound(existing.HttpResponse) {
-		return tf.ImportAsExistsError("azurerm_storage_container", id.ID())
+		if !response.WasNotFound(existing.HttpResponse) {
+			return tf.ImportAsExistsError("azurerm_storage_container", id.ID())
+		}
 	}
 
 	payload := blobcontainers.BlobContainer{

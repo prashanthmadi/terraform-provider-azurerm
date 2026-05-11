@@ -127,12 +127,14 @@ func (s SpringCloudApplicationInsightsApplicationPerformanceMonitoringResource) 
 			}
 			id := appplatform.NewApmID(springId.SubscriptionId, springId.ResourceGroupName, springId.ServiceName, model.Name)
 
-			existing, err := client.ApmsGet(ctx, id)
-			if err != nil && !response.WasNotFound(existing.HttpResponse) {
-				return fmt.Errorf("checking for existing %s: %+v", id, err)
-			}
-			if !response.WasNotFound(existing.HttpResponse) {
-				return metadata.ResourceRequiresImport(s.ResourceType(), id)
+			if !metadata.Client.Features.SkipExistenceCheckAndAllowOverwrite {
+				existing, err := client.ApmsGet(ctx, id)
+				if err != nil && !response.WasNotFound(existing.HttpResponse) {
+					return fmt.Errorf("checking for existing %s: %+v", id, err)
+				}
+				if !response.WasNotFound(existing.HttpResponse) {
+					return metadata.ResourceRequiresImport(s.ResourceType(), id)
+				}
 			}
 
 			resource := appplatform.ApmResource{
@@ -149,7 +151,7 @@ func (s SpringCloudApplicationInsightsApplicationPerformanceMonitoringResource) 
 					}),
 				},
 			}
-			err = client.ApmsCreateOrUpdateThenPoll(ctx, id, resource)
+			err = client.ApmsCreateOrUpdateCallbackThenPoll(ctx, id, resource, metadata.SetIDCallback(&id))
 			if err != nil {
 				return fmt.Errorf("creating %s: %+v", id, err)
 			}
@@ -163,8 +165,6 @@ func (s SpringCloudApplicationInsightsApplicationPerformanceMonitoringResource) 
 					return fmt.Errorf("enabling %s globally: %+v", id, err)
 				}
 			}
-
-			metadata.SetID(id)
 			return nil
 		},
 	}

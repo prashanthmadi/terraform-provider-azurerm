@@ -22,6 +22,7 @@ import (
 	"github.com/hashicorp/terraform-provider-azurerm/helpers/tf"
 	"github.com/hashicorp/terraform-provider-azurerm/helpers/validate"
 	"github.com/hashicorp/terraform-provider-azurerm/internal/clients"
+	"github.com/hashicorp/terraform-provider-azurerm/internal/sdk"
 	"github.com/hashicorp/terraform-provider-azurerm/internal/tf/pluginsdk"
 	"github.com/hashicorp/terraform-provider-azurerm/internal/tf/suppress"
 	"github.com/hashicorp/terraform-provider-azurerm/internal/tf/validation"
@@ -349,12 +350,10 @@ func resourceSearchServiceCreate(d *pluginsdk.ResourceData, meta interface{}) er
 		payload.Identity = expandedIdentity
 	}
 
-	err = client.CreateOrUpdateThenPoll(ctx, id, payload, services.CreateOrUpdateOperationOptions{})
+	err = client.CreateOrUpdateCallbackThenPoll(ctx, id, payload, services.CreateOrUpdateOperationOptions{}, sdk.SetIDCallback(meta, &id, d))
 	if err != nil {
 		return fmt.Errorf("creating %s: %+v", id, err)
 	}
-
-	d.SetId(id.ID())
 
 	return resourceSearchServiceRead(d, meta)
 }

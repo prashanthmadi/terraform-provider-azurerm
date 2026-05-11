@@ -272,7 +272,9 @@ func resourceStorageShareCreate(d *pluginsdk.ResourceData, meta interface{}) err
 				return fmt.Errorf("checking for existing %s: %v", id, err)
 			}
 			if exists != nil && *exists {
-				return tf.ImportAsExistsError("azurerm_storage_share", id.ID())
+				if !meta.(*clients.Client).Features.SkipExistenceCheckAndAllowOverwrite {
+					return tf.ImportAsExistsError("azurerm_storage_share", id.ID())
+				}
 			}
 
 			log.Printf("[INFO] Creating Share %q in Storage Account %q", shareName, accountName)
@@ -310,14 +312,16 @@ func resourceStorageShareCreate(d *pluginsdk.ResourceData, meta interface{}) err
 
 	id := fileshares.NewShareID(accountId.SubscriptionId, accountId.ResourceGroupName, accountId.StorageAccountName, d.Get("name").(string))
 
-	existing, err := sharesClient.Get(ctx, id, fileshares.DefaultGetOperationOptions())
-	if err != nil {
-		if !response.WasNotFound(existing.HttpResponse) {
-			return fmt.Errorf("checking for existing %q: %v", id, err)
+	if !meta.(*clients.Client).Features.SkipExistenceCheckAndAllowOverwrite {
+		existing, err := sharesClient.Get(ctx, id, fileshares.DefaultGetOperationOptions())
+		if err != nil {
+			if !response.WasNotFound(existing.HttpResponse) {
+				return fmt.Errorf("checking for existing %q: %v", id, err)
+			}
 		}
-	}
-	if !response.WasNotFound(existing.HttpResponse) {
-		return tf.ImportAsExistsError("azurerm_storage_share", id.ID())
+		if !response.WasNotFound(existing.HttpResponse) {
+			return tf.ImportAsExistsError("azurerm_storage_share", id.ID())
+		}
 	}
 
 	payload := fileshares.FileShare{
