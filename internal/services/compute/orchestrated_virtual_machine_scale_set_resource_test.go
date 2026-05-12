@@ -1156,9 +1156,9 @@ resource "azurerm_orchestrated_virtual_machine_scale_set" "test" {
       admin_username       = "myadmin"
       admin_password       = "Passwword1234"
 
-      enable_automatic_updates = true
-      provision_vm_agent       = true
-      timezone                 = "W. Europe Standard Time"
+      automatic_updates_enabled = true
+      provision_vm_agent        = true
+      timezone                  = "W. Europe Standard Time"
 
       winrm_listener {
         protocol = "Http"
@@ -1229,9 +1229,9 @@ resource "azurerm_orchestrated_virtual_machine_scale_set" "test" {
       admin_username       = "myadmin"
       admin_password       = "Passwword1234"
 
-      enable_automatic_updates = true
-      provision_vm_agent       = true
-      timezone                 = "W. Europe Standard Time"
+      automatic_updates_enabled = true
+      provision_vm_agent        = true
+      timezone                  = "W. Europe Standard Time"
 
       winrm_listener {
         protocol = "Http"
@@ -1307,8 +1307,8 @@ resource "azurerm_orchestrated_virtual_machine_scale_set" "test" {
       admin_username       = "myadmin"
       admin_password       = "Passwword1234"
 
-      enable_automatic_updates = true
-      provision_vm_agent       = true
+      automatic_updates_enabled = true
+      provision_vm_agent        = true
 
       winrm_listener {
         protocol = "Http"
@@ -1786,7 +1786,8 @@ resource "azurerm_storage_account" "test" {
   account_replication_type = "LRS"
 
   tags = {
-    environment = "staging"
+    environment                     = "staging"
+    allow_nested_items_to_be_public = true
   }
 }
 
@@ -2198,7 +2199,8 @@ resource "azurerm_public_ip" "gwtest" {
   name                = "acctest-pubip-%[1]d"
   location            = azurerm_resource_group.test.location
   resource_group_name = azurerm_resource_group.test.name
-  allocation_method   = "Dynamic"
+  allocation_method   = "Static"
+  sku                 = "Standard"
 }
 
 resource "azurerm_application_gateway" "test" {
@@ -2372,9 +2374,9 @@ resource "azurerm_orchestrated_virtual_machine_scale_set" "test" {
       admin_username       = "myadmin"
       admin_password       = "Passwword1234"
 
-      enable_automatic_updates = true
-      provision_vm_agent       = true
-      timezone                 = "W. Europe Standard Time"
+      automatic_updates_enabled = true
+      provision_vm_agent        = true
+      timezone                  = "W. Europe Standard Time"
 
       winrm_listener {
         protocol = "Http"
@@ -2465,9 +2467,9 @@ resource "azurerm_orchestrated_virtual_machine_scale_set" "test" {
       admin_username       = "myadmin"
       admin_password       = "Passwword1234"
 
-      enable_automatic_updates = true
-      provision_vm_agent       = true
-      timezone                 = "W. Europe Standard Time"
+      automatic_updates_enabled = true
+      provision_vm_agent        = true
+      timezone                  = "W. Europe Standard Time"
 
       winrm_listener {
         protocol = "Http"
@@ -2553,9 +2555,9 @@ resource "azurerm_orchestrated_virtual_machine_scale_set" "test" {
       admin_username       = "myadmin"
       admin_password       = "Passwword1234"
 
-      enable_automatic_updates = true
-      provision_vm_agent       = true
-      timezone                 = "W. Europe Standard Time"
+      automatic_updates_enabled = true
+      provision_vm_agent        = true
+      timezone                  = "W. Europe Standard Time"
 
       winrm_listener {
         protocol = "Http"
@@ -2646,9 +2648,9 @@ resource "azurerm_orchestrated_virtual_machine_scale_set" "test" {
       admin_username       = "myadmin"
       admin_password       = "Passwword1234"
 
-      enable_automatic_updates = true
-      provision_vm_agent       = true
-      timezone                 = "W. Europe Standard Time"
+      automatic_updates_enabled = true
+      provision_vm_agent        = true
+      timezone                  = "W. Europe Standard Time"
 
       winrm_listener {
         protocol = "Http"
@@ -2739,9 +2741,9 @@ resource "azurerm_orchestrated_virtual_machine_scale_set" "test" {
       admin_username       = "myadmin"
       admin_password       = "Passwword1234"
 
-      enable_automatic_updates = true
-      provision_vm_agent       = true
-      timezone                 = "W. Europe Standard Time"
+      automatic_updates_enabled = true
+      provision_vm_agent        = true
+      timezone                  = "W. Europe Standard Time"
 
       winrm_listener {
         protocol = "Http"
@@ -2829,9 +2831,9 @@ resource "azurerm_orchestrated_virtual_machine_scale_set" "test" {
       admin_username       = "myadmin"
       admin_password       = "Passwword1234"
 
-      enable_automatic_updates = true
-      provision_vm_agent       = true
-      timezone                 = "W. Europe Standard Time"
+      automatic_updates_enabled = true
+      provision_vm_agent        = true
+      timezone                  = "W. Europe Standard Time"
 
       winrm_listener {
         protocol = "Http"
@@ -2919,9 +2921,9 @@ resource "azurerm_orchestrated_virtual_machine_scale_set" "test" {
       admin_username       = "myadmin"
       admin_password       = "Passwword1234"
 
-      enable_automatic_updates = true
-      provision_vm_agent       = true
-      timezone                 = "W. Europe Standard Time"
+      automatic_updates_enabled = true
+      provision_vm_agent        = true
+      timezone                  = "W. Europe Standard Time"
 
       winrm_listener {
         protocol = "Http"
