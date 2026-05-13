@@ -298,12 +298,29 @@ func resourceStorageTableEntityRead(d *pluginsdk.ResourceData, meta interface{})
 	var account *client.AccountDetails
 
 	tableIdRaw, ok := d.GetOk("storage_table_id")
-	if !ok || tableIdRaw.(string) == "" {
-		return fmt.Errorf("`storage_table_id` is required")
+	storageTableIdRaw := ""
+	if ok {
+		storageTableIdRaw = tableIdRaw.(string)
 	}
-	storageTableIdRaw := tableIdRaw.(string)
 
-	if !features.FivePointOh() {
+	if storageTableIdRaw == "" {
+		// Imports on FivePointOh and legacy
+		accountName = id.AccountId.AccountName
+		tableName = id.TableName
+		account, err = storageClient.FindAccount(ctx, subscriptionId, accountName)
+		if err != nil {
+			return fmt.Errorf("retrieving Account %q for Table %q: %v", accountName, tableName, err)
+		}
+		if account != nil {
+			if !features.FivePointOh() {
+				storageTableId := legacyTables.NewTableID(id.AccountId, id.TableName)
+				storageTableIdFmtd = storageTableId.ID()
+			} else {
+				storageTableId := tables.NewTableID(subscriptionId, account.StorageAccountId.ResourceGroupName, accountName, tableName)
+				storageTableIdFmtd = storageTableId.ID()
+			}
+		}
+	} else if !features.FivePointOh() {
 		if strings.HasPrefix(strings.ToLower(storageTableIdRaw), "/subscriptions/") {
 			storageTableId, err := tables.ParseTableID(storageTableIdRaw)
 			if err != nil {

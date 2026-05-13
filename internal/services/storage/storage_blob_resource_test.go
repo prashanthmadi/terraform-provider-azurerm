@@ -1356,7 +1356,7 @@ provider "azurerm" {
   features {}
 }
 
-		%[1]s
+%[1]s
 
 resource "azurerm_storage_encryption_scope" "test" {
   name               = "acctestEScontainer%[2]d"
